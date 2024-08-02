@@ -1,63 +1,74 @@
 import React, { Component } from 'react'
 import NewsItem from './NewsItem'
+import Spinner from './Spinner';
+import PropTypes from 'prop-types'
+
 
 export class News extends Component {
-  constructor(){
-    super();
-    this.state = {
-      articles : [],
-      loading : false,
-      page : 1
-    }
+  static defaultPropes = {
+    country: 'in',
+    pageSize: 9,
+    category: 'general'
   }
 
-  async componentDidMount(){
-      let url="https://newsapi.org/v2/top-headlines?country=in&apiKey=b8ec66c2ed014cc3848a4d0882a98963";
-      let data= await fetch(url);
-      let parsedData= await data.json()
-      console.log(parsedData);
-      this.setState({articles: parsedData.articles})
+  static propTypes = {
+    country: PropTypes.string,
+    pageSize: PropTypes.number,
+    category: PropTypes.string,
   }
-  handleNextClick = async ()=>{
-    console.log("Nextterm");
-    let url=`https://newsapi.org/v2/top-headlines?country=in&apiKey=b8ec66c2ed014cc3848a4d0882a98963&page=${this.state.page + 1}`;
-    let data= await fetch(url);
-    let parsedData= await data.json()
+
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      articles: [],
+      loading: false,
+      page: 1
+    }
+    document.title = `${this.props.category} - NewsMonkey`;
+  }
+
+  async updateNews(pageNo) {
+    const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=b8ec66c2ed014cc3848a4d0882a98963&page=${this.state.page}&pagesize=${this.props.pageSize}`;
+    this.setState({ loading: true });
+    let data = await fetch(url);
+    let parsedData = await data.json()
     console.log(parsedData);
     this.setState({
-      page:this.state.page + 1,
-      articles: parsedData.articles
+      articles: parsedData.articles,
+      totalArticles: parsedData.totalResults,
+      loading: false
     })
-   
-}
-  handlePrevClick = async ()=>{
-      console.log("previous");
-      let url=`https://newsapi.org/v2/top-headlines?country=in&apiKey=b8ec66c2ed014cc3848a4d0882a98963&page=${this.state.page - 1}`;
-      let data= await fetch(url);
-      let parsedData= await data.json()
-      console.log(parsedData);
-      this.setState({
-        page:this.state.page - 1,
-        articles: parsedData.articles
-      })
-     
   }
 
- 
+  async componentDidMount() {
+    this.updateNews();
+  }
+  handleNextClick = async () =>{
+    this.setState({ page: this.state.page + 1 });
+    this.updateNews();
+  }
+  handlePrevClick = async () => {
+    this.setState({ page: this.state.page - 1 });
+    this.updateNews();
+  }
+
+
   render() {
     return (
       <div className="container my-3" >
-        <h1>NewsMonkey - Top Headlines</h1>
+        <h1 className="text-center" style={{ margin: '30px 0px' }}>NewsMonkey - Top Headlines From {this.props.category}</h1>
+        {this.state.loading && <Spinner />}
         <div className="row">
-        {this.state.articles.map((element)=>{
-          return <div className="col-md-4" key ={element.url} >
-        <NewsItem title={element.title?element.title.slice(24,80):""} description ={element.description?element.description.slice(24,80):""} imageUrl= {element.urlToImage} newsUrl={element.url}/>
-        </div>
-        })}
+          {!this.state.loading && this.state.articles.map((element) => {
+            return <div className="col-md-4" key={element.url} >
+              <NewsItem title={element.title ? element.title : ""} description={element.description ? element.description : ""} imageUrl={element.urlToImage} newsUrl={element.url} author={element.author} date={element.publishedAt} source={element.source.name} />
+            </div>
+          })}
         </div>
         <div className="container d-flex justify-content-between">
-        <button disabled={this.state.page<=1} type="button" className="btn btn-dark" onClick={this.handlePrevClick}>&larr; Prev</button>
-        <button type="button" className="btn btn-dark" onClick={this.handleNextClick}>Next &rarr;</button>
+          <button disabled={this.state.page <= 1} type="button" className="btn btn-dark" onClick={this.handlePrevClick}>&larr; Prev</button>
+          <button disabled={this.state.articles.length < this.props.pageSize} type="button" className="btn btn-dark" onClick={this.handleNextClick}>Next &rarr;</button>
         </div>
       </div>
 
