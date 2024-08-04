@@ -2,18 +2,18 @@ import React, { Component } from 'react'
 
 export class NewsItem extends Component {
   render() {
-    let { title, description, imageUrl, newsUrl, author, date, source } = this.props;
+    let { title, description, imageUrl, newsUrl, author, date } = this.props;
     return (
       <div className="my-3 mb-0">
         <div className="card " >
-        <div className="card-header">
-          {source}
-        </div>
-          <img src={!imageUrl ? "https:www.hindustantimes.com/ht-img/img/2024/04/16/1600x900/Cricket_1713260878026_1713260990583.jpg" : imageUrl} className="card-img-top" alt="..." />
+          <div className="card-header">
+            {!author ? "Unknown" : author}
+          </div>
+          <img src={!imageUrl ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_aYXGxWEpOqn0lvSO0S1ZEKPKrwAvCjfeUg&s" : imageUrl} className="card-img-top" alt="..." />
           <div className="card-body">
             <h5 className="card-title">{title}</h5>
             <p className="card-text">{description}</p>
-            <p className="card-text"><small className="text-body-secondary">by {!author ? "Unknown" : author} on {new Date(date).toGMTString()}</small></p>
+            <p className="card-text"><small className="text-body-secondary"> {new Date(date).toGMTString()}</small></p>
             <a rel="noreferrer" href={newsUrl} target="_blank" className="btn btn-dark">Read More</a>
           </div>
         </div>
