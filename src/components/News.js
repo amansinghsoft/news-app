@@ -32,17 +32,10 @@ const capitalizeFirstLetter=(string)=>{
   }
     useEffect(()=>{
       updateNews();
+      // eslint-disable-next-line
     },[])
  
-  const handleNextClick = async () => {
-    updateNews();
-    setPage(page + 1)
-  }
-  const handlePrevClick = async () => {
- 
-    setPage(page - 1)
-    updateNews();
-  }
+  
   const fetchMoreData = async () => {
     const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=b8ec66c2ed014cc3848a4d0882a98963&page=${page + 1}&pagesize=${props.pageSize}`;
     setPage(page + 1);
@@ -56,7 +49,7 @@ const capitalizeFirstLetter=(string)=>{
 
     return (
       <>
-        <h1 className="text-center" style={{ margin: '30px 0px', marginTop: '80px' }}>NewsMonkey - Top{capitalizeFirstLetter(props.category)}  Headlines </h1>
+        <h1 className="text-center" style={{ margin: '30px 0px', marginTop: '80px' }}>NewsMonkey - Top {capitalizeFirstLetter(props.category)}  Headlines </h1>
         {loading && <Spinner />}
         <InfiniteScroll
           dataLength={articles.length}
